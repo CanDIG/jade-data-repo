@@ -1,0 +1,31 @@
+type Query {
+  studyByName(name: String!): Study
+}
+
+type Study {
+  id: String!
+  name: String!
+  description: String
+  createdDate: String
+  tables: [TableModel]!
+  relationships: [RelationshipModel]
+}
+
+type TableModel {
+  name: String!
+  columns: [ColumnModel]!
+}
+
+type ColumnModel {
+  name: String!
+  datatype: String!
+}
+
+type RelationshipModel {
+  name: String!
+  fromTable: String!
+  fromColumn: String!
+  toTable: String!
+  toColumn: String!
+}
+
