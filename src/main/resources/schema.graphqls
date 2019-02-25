@@ -1,5 +1,6 @@
 type Query {
   studyByName(name: String!): Study
+  studies: [Study]
 }
 
 type Study {
@@ -27,5 +28,13 @@ type RelationshipModel {
   fromColumn: String!
   toTable: String!
   toColumn: String!
+}
+
+type Mutation {
+  studyName(oldname: String! newname: String!): Study
+}
+
+input StudyInput {
+  name: String
 }
 

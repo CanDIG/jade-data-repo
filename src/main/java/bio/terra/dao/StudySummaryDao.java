@@ -76,7 +76,7 @@ public class StudySummaryDao {
 
     // does not return sub-objects with studies
     public List<StudySummary> enumerate() {
-        String sql = "SELECT, id, name, description, created_date FROM study";
+        String sql = "SELECT id, name, description, created_date FROM study";
         return jdbcTemplate.query(sql, new MapSqlParameterSource(), new StudySummaryMapper());
     }
 }

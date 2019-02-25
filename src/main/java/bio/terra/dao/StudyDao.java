@@ -11,7 +11,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Repository
 public class StudyDao extends StudySummaryDao {
@@ -80,4 +82,9 @@ public class StudyDao extends StudySummaryDao {
         }
     }
 
+    @Override
+    public List<StudySummary> enumerate() {
+        List<StudySummary> summaries = super.enumerate();
+        return summaries.stream().map(summary -> retrieveWorker(summary)).collect(Collectors.toList());
+    }
 }

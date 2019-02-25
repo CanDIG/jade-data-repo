@@ -38,6 +38,8 @@ public class GraphQLProvider {
 
     @Autowired
     GraphQLDataFetchers graphQLDataFetchers;
+    @Autowired
+    GraphQLMutations graphQLMutations;
 
     private GraphQLSchema buildSchema(String sdl) {
         TypeDefinitionRegistry typeRegistry = new SchemaParser().parse(sdl);
@@ -50,8 +52,26 @@ public class GraphQLProvider {
         return RuntimeWiring.newRuntimeWiring()
                 .type(newTypeWiring("Query")
                         .dataFetcher("studyByName", graphQLDataFetchers.getStudyByNameDataFetcher()))
+                .type(newTypeWiring("Query")
+                        .dataFetcher("studies", graphQLDataFetchers.getStudiesDataFetcher()))
                 .type(newTypeWiring("Study")
-                        .dataFetcher("schema", graphQLDataFetchers.getIdDataFetcher()))
+                        .dataFetcher("id", graphQLDataFetchers.getStudyIdDataFetcher()))
+                .type(newTypeWiring("Study")
+                        .dataFetcher("tables", graphQLDataFetchers.getStudyTablesDataFetcher()))
+                .type(newTypeWiring("Study")
+                        .dataFetcher("relationships", graphQLDataFetchers.getStudyRelationshipsDataFetcher()))
+                .type(newTypeWiring("RelationshipModel")
+                        .dataFetcher("fromTable", graphQLDataFetchers.getRelationshipFromTableDataFetcher()))
+                .type(newTypeWiring("RelationshipModel")
+                        .dataFetcher("fromColumn", graphQLDataFetchers.getRelationshipFromColumnDataFetcher()))
+                .type(newTypeWiring("RelationshipModel")
+                        .dataFetcher("toTable", graphQLDataFetchers.getRelationshipToTableDataFetcher()))
+                .type(newTypeWiring("RelationshipModel")
+                        .dataFetcher("toColumn", graphQLDataFetchers.getRelationshipToColumnDataFetcher()))
+//                .type(newTypeWiring("Table")
+//                        .dataFetcher("name", graphQLDataFetchers.getStudyTableNameDataFetcher()))
+                .type(newTypeWiring("Mutation")
+                        .dataFetcher("name", graphQLMutations.setStudyName()))
                 .build();
     }
 }
