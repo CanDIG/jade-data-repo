@@ -3,7 +3,37 @@ The repo for the terra data repository built by the jade team.
 
 See the DATABASE.md to set up the postgres database before you run jade.
 
+## Setup environment
+### Google project and account
+You must have authenticated with google for application-default credentials: 
+	
+	gcloud auth application-default login
+and login with your broad account - not your dev account. This will save credentials locally. If you are using multiple accounts, you can switch to the correct one using this command: 
+
+    gcloud config set account <account email>
+
+Then you must specify a google project to use. Either run this command: 
+
+
+    gcloud config set project <project-name>
+    
+or specify your project in the environment variable: `GOOGLE_CLOUD_PROJECT`.
+
+To see what you currently have set, use: `gcloud config list`
+
+### OIDC Environment variables
+
+There are some secrets that need to be provided to the app and will not be checked in
+to github. If you are standing this up on your own, you will need to get an Oauth client
+id and secret. We got one in GCP from the cloud console by creating an
+[Oauth consent screen](https://console.cloud.google.com/apis/credentials/consent)
+and then an [Oauth web client id](https://console.cloud.google.com/apis/credentials).
+
+    OAUTH_CLIENT_ID
+    OAUTH_CLIENT_SECRET
+
 ## Build and Run
+### Locally
 
 If you are making code changes, run:
 `./gradlew check`
@@ -11,9 +41,46 @@ If you are making code changes, run:
 To run jade locally:
 `./gradlew bootRun`
 
+To run jade locally and wait for debugger to attach on port 5005:
+`./gradlew bootRun --debug-jvm`
+
 To have the code hot reload, enable automatic builds in intellij, go to:
 `Preferences -> Build, Execution, Deployment -> Compiler`
 and select `Build project automatically`
+
+The swagger page is:
+https://local.broadinstitue.org:8080
+
+### MiniKube (local kubernetes w/ proxy)
+
+    ops/local/run.sh
+    
+Once this is up and running, you will see this output and you should update your /etc/hosts file:
+
+    remote debug available at x.x.x.x:5005
+
+    to use the oidc proxy, add this to your /etc/hosts file:
+    x.x.x.x   mini.broadinstitute.org
+
+    about to call minikube tunnel, it will ask you for your system password and then fill up your console with logs..
+
+If it doesn't start up successfully, you may need to delete one or more pods 
+
+    kubectrl delete pod postgres
+
+## Test
+
+### Unit tests
+
+    ./gradlew test
+
+### Connected tests
+You must have set up your google project correctly
+
+    ./gradlew connectedTest
+    
+### Integration tests
+You must start minikube
 
 ## Swagger Codegen
 
@@ -38,13 +105,3 @@ in a directory other than a git cloned workspace, run:
 
 Then copy the files you want into the source tree
 
-## Environment variables
-
-There are some secrets that need to be provided to the app and will not be checked in
-to github. If you are standing this up on your own, you will need to get an Oauth client
-id and secret. We got one in GCP from the cloud console by creating an
-[Oauth consent screen](https://console.cloud.google.com/apis/credentials/consent)
-and then an [Oauth web client id](https://console.cloud.google.com/apis/credentials).
-
-    OAUTH_CLIENT_ID
-    OAUTH_CLIENT_SECRET
