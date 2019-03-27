@@ -8,7 +8,7 @@ See the DATABASE.md to set up the postgres database before you run jade.
 You must have authenticated with google for application-default credentials: 
 	
 	gcloud auth application-default login
-and login with your broad account - not your dev account. This will save credentials locally. If you are using multiple accounts, you can switch to the correct one using this command: 
+and login with an account that has access to your project. This will save credentials locally. If you are using multiple accounts, you can switch to the correct one using this command: 
 
     gcloud config set account <account email>
 
