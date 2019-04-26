@@ -1,0 +1,14 @@
+apiVersion: skaffold/v1beta8
+kind: Config
+build:
+  artifacts:
+  - image: gcr.io/broad-jade-dev/jade-data-repo
+    docker:
+      dockerfile: Dockerfile
+deploy:
+  kubectl:
+    manifests:
+    - ops/k8s/deployments/api-deployment.yaml
+    
+
+
