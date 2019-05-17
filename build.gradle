@@ -29,7 +29,7 @@ buildscript {
 }
 
 plugins {
-  id 'com.palantir.docker' version '0.20.1'
+  //id 'com.palantir.docker' version '0.20.1'
   id 'com.google.cloud.tools.jib' version '1.2.0'
   id 'org.liquibase.gradle' version '2.0.1'
 }
@@ -38,7 +38,8 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
-apply plugin: 'com.palantir.docker'
+//apply plugin: 'com.palantir.docker'
+apply plugin: 'com.google.cloud.tools.jib'
 
 apply plugin: 'checkstyle'
 apply plugin: 'findbugs'
@@ -246,12 +247,29 @@ def getGitHash = { ->
     return stdout.toString().trim()
 }
 
-
-docker {
-    name "gcr.io/broad-jade-dev/${bootJar.baseName}:${System.env.GCR_TAG ?: "latest"}"
-    copySpec.from(tasks.unpack.outputs).into("dependency")
-    buildArgs(['DEPENDENCY': "dependency"])
+jib {
+  from {
+    image = 'openjdk:8-jdk-alpine'
+  }
+  to {
+    image = 'gcr.io/broad-jade-dev/jade-data-repo'
+    credHelper = 'osxkeychain'
+    tags = ['latest']
+    //tags = ['${System.env.GCR_TAG ?: "latest"}']
+  }
+  container {
+    mainClass = 'bio.terra.Main'
+    volumes = ['/tmp']
+    extraDirectories.paths = ['target/depedency', 'target/dependency/BOOT-INF', 'target/dependency/BOOT-INF/classes']
+//Docker Manifest, Schema 2
+  }
 }
+
+//docker {
+    //name "gcr.io/broad-jade-dev/${bootJar.baseName}:${System.env.GCR_TAG ?: "latest"}"
+    //copySpec.from(tasks.unpack.outputs).into("dependency")
+    //buildArgs(['DEPENDENCY': "dependency"])
+//}
 
 // -- Test tasks --
 // The default 'test' task runs all of the tests.
@@ -317,6 +335,7 @@ task testAll(type: Test) {
     }
 }
 
+tasks.build.dependsOn tasks.jib
 compileGeneratedJava.dependsOn generateApi
 classes.dependsOn generatedClasses
 compileJava.dependsOn compileGeneratedJava

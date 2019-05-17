@@ -5,12 +5,9 @@ build:
   - image: gcr.io/broad-jade-dev/jade-data-repo
     jibGradle:
       args:
-      - dockerPrepare
+      - jib
 deploy:
   kubectl:
     manifests:
     - ops/k8s/deployments/api-deployment.yaml
-
-
-
 
