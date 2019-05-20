@@ -258,11 +258,11 @@ jib {
     //tags = ['${System.env.GCR_TAG ?: "latest"}']
   }
   container {
-    mainClass = 'bio.terra.Main'
-    volumes = ['/tmp']
-    extraDirectories.paths = ['target/depedency', 'target/dependency/BOOT-INF', 'target/dependency/BOOT-INF/classes']
-//Docker Manifest, Schema 2
+      mainClass = 'bio.terra.Main'
+      volumes = ['/tmp']
   }
+    extraDirectories.paths = ['out/production/resources', 'out/production/classes', 'out/generated']
+
 }
 
 //docker {
