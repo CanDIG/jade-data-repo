@@ -1273,9 +1273,6 @@ definitions:
       createdDate:
         type: string
         description: Date the study was created
-#      billingAccount:
-#        type: string
-#        description: The billing account identifier that will be used to fund this study's resources
 
   StudySummaryModel:
     description: |
