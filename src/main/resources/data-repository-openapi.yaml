@@ -1747,9 +1747,9 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/TableModel'
-      profile:
-        $ref: '#/definitions/BillingProfileModel'
-        description: The profile of this dataset
+      profileId:
+        $ref: '#/definitions/UniqueIdProperty'
+        description: The profile id of this dataset
 
   DatasetSourceModel:
     description: |
