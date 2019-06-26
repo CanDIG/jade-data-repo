@@ -84,7 +84,6 @@ public class IngestTest {
         assertThat("correct participant row count", ingestResponse.getRowCount(), equalTo(5L));
     }
 
-    @Ignore
     @Test
     public void ingestBuildDataset() throws Exception {
         IngestResponseModel ingestResponse =

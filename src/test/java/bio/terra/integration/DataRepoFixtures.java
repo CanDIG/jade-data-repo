@@ -13,6 +13,9 @@ import bio.terra.model.PolicyMemberRequest;
 import bio.terra.model.StudyModel;
 import bio.terra.model.StudyRequestModel;
 import bio.terra.model.StudySummaryModel;
+import bio.terra.model.BillingProfileModel;
+import bio.terra.model.BillingProfileRequestModel;
+import bio.terra.fixtures.ProfileFixtures;
 import bio.terra.service.SamClientService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +43,25 @@ public class DataRepoFixtures {
     private ObjectMapper objectMapper;
 
 
-    // studies
+    // Create a Billing Profile model: expect successful creation
+    public BillingProfileModel createBillingProfile(String authToken) throws Exception{
+        BillingProfileRequestModel billingProfileRequestModel = ProfileFixtures.randomBillingProfileRequest();
+        String json = objectMapper.writeValueAsString(billingProfileRequestModel);
+        DataRepoResponse<BillingProfileModel> postResponse = dataRepoClient.post(
+            authToken,
+            "/api/resources/v1/profiles",
+            json,
+            BillingProfileModel.class);
+
+        assertThat("billing profile model is successfuly created", postResponse.getStatusCode(), equalTo(HttpStatus.CREATED));
+        assertTrue("create billing profile model response is present", postResponse.getResponseObject().isPresent());
+        return postResponse.getResponseObject().get();
+    }
 
     public DataRepoResponse<StudySummaryModel> createStudyRaw(String authToken, String filename) throws Exception {
         StudyRequestModel requestModel = jsonLoader.loadObject(filename, StudyRequestModel.class);
+        BillingProfileModel billingProfileModel = this.createBillingProfile(authToken);
+        requestModel.setDefaultProfileId(billingProfileModel.getId());
         requestModel.setName(Names.randomizeName(requestModel.getName()));
         String json = objectMapper.writeValueAsString(requestModel);
 
@@ -118,8 +136,10 @@ public class DataRepoFixtures {
     public DataRepoResponse<DatasetSummaryModel> createDatasetRaw(String authToken, StudySummaryModel studySummaryModel,
                                                                   String filename) throws Exception {
         DatasetRequestModel requestModel = jsonLoader.loadObject(filename, DatasetRequestModel.class);
+        BillingProfileModel billingProfileModel = this.createBillingProfile(authToken);
         requestModel.setName(Names.randomizeName(requestModel.getName()));
         requestModel.getContents().get(0).getSource().setStudyName(studySummaryModel.getName());
+        requestModel.setProfileId(billingProfileModel.getId());
         String json = objectMapper.writeValueAsString(requestModel);
 
         DataRepoResponse<JobModel> jobResponse = dataRepoClient.post(
