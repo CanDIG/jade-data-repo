@@ -30,6 +30,7 @@ import static org.junit.Assert.assertTrue;
 @Component
 @Profile("integrationtest")
 public class DataRepoFixtures {
+
     @Autowired
     private JsonLoader jsonLoader;
 
@@ -44,7 +45,7 @@ public class DataRepoFixtures {
 
 
     // Create a Billing Profile model: expect successful creation
-    public BillingProfileModel createBillingProfile(String authToken) throws Exception{
+    public BillingProfileModel createBillingProfile(String authToken) throws Exception {
         BillingProfileRequestModel billingProfileRequestModel = ProfileFixtures.randomBillingProfileRequest();
         String json = objectMapper.writeValueAsString(billingProfileRequestModel);
         DataRepoResponse<BillingProfileModel> postResponse = dataRepoClient.post(
@@ -53,8 +54,10 @@ public class DataRepoFixtures {
             json,
             BillingProfileModel.class);
 
-        assertThat("billing profile model is successfuly created", postResponse.getStatusCode(), equalTo(HttpStatus.CREATED));
-        assertTrue("create billing profile model response is present", postResponse.getResponseObject().isPresent());
+        assertThat("billing profile model is successfuly created", postResponse.getStatusCode(),
+            equalTo(HttpStatus.CREATED));
+        assertTrue("create billing profile model response is present",
+            postResponse.getResponseObject().isPresent());
         return postResponse.getResponseObject().get();
     }
 
@@ -128,7 +131,8 @@ public class DataRepoFixtures {
                                      SamClientService.DataRepoRole role,
                                      String userEmail) throws Exception {
         DataRepoResponse<Object> response = addStudyPolicyMemberRaw(authToken, studyId, role, userEmail);
-        assertThat("study policy memeber is successfully added", response.getStatusCode(), equalTo(HttpStatus.OK));
+        assertThat("study policy memeber is successfully added",
+            response.getStatusCode(), equalTo(HttpStatus.OK));
     }
 
     // datasets
