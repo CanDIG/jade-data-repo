@@ -3,7 +3,6 @@ package bio.terra.filesystem;
 import bio.terra.category.Connected;
 import bio.terra.configuration.ConnectedTestConfiguration;
 import bio.terra.fixtures.ConnectedOperations;
-import bio.terra.fixtures.JsonLoader;
 import bio.terra.fixtures.Names;
 import bio.terra.model.BillingProfileModel;
 import bio.terra.model.ErrorModel;
@@ -11,7 +10,6 @@ import bio.terra.model.FileLoadModel;
 import bio.terra.model.FileModel;
 import bio.terra.model.StudySummaryModel;
 import bio.terra.resourcemanagement.service.google.GoogleResourceConfiguration;
-import bio.terra.service.DrsIdService;
 import bio.terra.service.SamClientService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
@@ -48,21 +46,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class FileOperationTest {
     @Autowired private MockMvc mvc;
     @Autowired private ObjectMapper objectMapper;
-    @Autowired private JsonLoader jsonLoader;
     @Autowired private ConnectedTestConfiguration testConfig;
-    @Autowired private DrsIdService drsService;
     @Autowired private GoogleResourceConfiguration googleResourceConfiguration;
+    @Autowired private ConnectedOperations connectedOperations;
 
     @MockBean
     private SamClientService samService;
-
-    private ConnectedOperations connectedOperations;
 
     @Before
     public void setup() throws Exception {
         // Setup mock sam service
         ConnectedOperations.stubOutSamCalls(samService);
-        connectedOperations = new ConnectedOperations(mvc, objectMapper, jsonLoader);
     }
 
     @After
