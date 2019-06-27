@@ -103,5 +103,4 @@ public class IngestTest {
             dataRepoFixtures.createDataset(custodianToken, studySummaryModel, "ingest-test-dataset.json");
         createdDatasetIds.add(datasetSummary.getId());
     }
-
 }
