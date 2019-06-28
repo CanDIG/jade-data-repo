@@ -128,7 +128,7 @@ public class RepositoryApiController implements RepositoryApi {
             getAuthenticatedInfo(),
             SamClientService.ResourceType.DATAREPO,
             appConfig.datarepoId(),
-            SamClientService.DataRepoAction.CREATE_STUDY);
+            SamClientService.DataRepoAction.CREATE_DATASET);
         return new ResponseEntity<>(studyService.createStudy(studyRequest, getAuthenticatedInfo()), HttpStatus.CREATED);
     }
 
@@ -136,9 +136,9 @@ public class RepositoryApiController implements RepositoryApi {
     public ResponseEntity<StudyModel> retrieveStudy(@PathVariable("id") String id) {
         samService.verifyAuthorization(
             getAuthenticatedInfo(),
-            SamClientService.ResourceType.STUDY,
+            SamClientService.ResourceType.DATASET,
             id,
-            SamClientService.DataRepoAction.READ_STUDY);
+            SamClientService.DataRepoAction.READ_DATASET);
         return new ResponseEntity<>(studyService.retrieve(UUID.fromString(id)), HttpStatus.OK);
     }
 
@@ -146,7 +146,7 @@ public class RepositoryApiController implements RepositoryApi {
     public ResponseEntity<DeleteResponseModel> deleteStudy(@PathVariable("id") String id) {
         samService.verifyAuthorization(
             getAuthenticatedInfo(),
-            SamClientService.ResourceType.STUDY,
+            SamClientService.ResourceType.DATASET,
             id,
             SamClientService.DataRepoAction.DELETE);
         return new ResponseEntity<>(studyService.delete(UUID.fromString(id), getAuthenticatedInfo()), HttpStatus.OK);
@@ -161,7 +161,7 @@ public class RepositoryApiController implements RepositoryApi {
         ControllerUtils.validateEnumerateParams(offset, limit, sort, direction);
         try {
             List<ResourceAndAccessPolicy> resources = samService.listAuthorizedResources(
-                getAuthenticatedInfo(), SamClientService.ResourceType.STUDY);
+                getAuthenticatedInfo(), SamClientService.ResourceType.DATASET);
             EnumerateStudyModel esm = studyService.enumerate(offset, limit, sort, direction, filter, resources);
             return new ResponseEntity<>(esm, HttpStatus.OK);
         } catch (ApiException ex) {
@@ -218,7 +218,7 @@ public class RepositoryApiController implements RepositoryApi {
             PolicyResponse response = new PolicyResponse().policies(Collections.singletonList(
                 samService.addPolicyMember(
                     getAuthenticatedInfo(),
-                    SamClientService.ResourceType.STUDY,
+                    SamClientService.ResourceType.DATASET,
                     UUID.fromString(id),
                     policyName,
                     policyMember.getEmail())));
@@ -234,7 +234,7 @@ public class RepositoryApiController implements RepositoryApi {
             PolicyResponse response = new PolicyResponse().policies(
                 samService.retrievePolicies(
                     getAuthenticatedInfo(),
-                    SamClientService.ResourceType.STUDY,
+                    SamClientService.ResourceType.DATASET,
                     UUID.fromString(id)));
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (ApiException ex) {
@@ -254,7 +254,7 @@ public class RepositoryApiController implements RepositoryApi {
             PolicyResponse response = new PolicyResponse().policies(Collections.singletonList(
                 samService.deletePolicyMember(
                     getAuthenticatedInfo(),
-                    SamClientService.ResourceType.STUDY,
+                    SamClientService.ResourceType.DATASET,
                     UUID.fromString(id),
                     policyName,
                     memberEmail)));
@@ -306,7 +306,7 @@ public class RepositoryApiController implements RepositoryApi {
             PolicyResponse response = new PolicyResponse().policies(Collections.singletonList(
                 samService.addPolicyMember(
                     getAuthenticatedInfo(),
-                    SamClientService.ResourceType.DATASET,
+                    SamClientService.ResourceType.DATASNAPSHOT,
                     UUID.fromString(id),
                     policyName,
                     policyMember.getEmail())));
@@ -322,7 +322,7 @@ public class RepositoryApiController implements RepositoryApi {
             PolicyResponse response = new PolicyResponse().policies(
                 samService.retrievePolicies(
                     getAuthenticatedInfo(),
-                    SamClientService.ResourceType.DATASET,
+                    SamClientService.ResourceType.DATASNAPSHOT,
                     UUID.fromString(id)));
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (ApiException ex) {
@@ -342,7 +342,7 @@ public class RepositoryApiController implements RepositoryApi {
             PolicyResponse response = new PolicyResponse().policies(Collections.singletonList(
                 samService.deletePolicyMember(
                     getAuthenticatedInfo(),
-                    SamClientService.ResourceType.DATASET,
+                    SamClientService.ResourceType.DATASNAPSHOT,
                     UUID.fromString(id),
                     policyName,
                     memberEmail)));

@@ -40,7 +40,7 @@ public class SamClientServiceTest {
         // TODO this code below is not mocked correctly
         willThrow(new ApiException("test"))
             .given(samResourceApi)
-            .createResource(eq(SamClientService.ResourceType.STUDY.toString()), any());
+            .createResource(eq(SamClientService.ResourceType.DATASET.toString()), any());
         sam.createStudyResource(new AuthenticatedUserRequest("blah", "blah"), studyId);
     }
 
@@ -50,7 +50,7 @@ public class SamClientServiceTest {
         // TODO this code below is not mocked correctly
         willThrow(new ApiException("test"))
             .given(samResourceApi)
-            .createResource(eq(SamClientService.ResourceType.DATASET.toString()), any());
+            .createResource(eq(SamClientService.ResourceType.DATASNAPSHOT.toString()), any());
         Optional<List<String>> readerList = Optional.of(Collections.singletonList("email@email.com"));
         sam.createDatasetResource(new AuthenticatedUserRequest("blah", "blah"), datasetId, readerList);
     }
@@ -68,7 +68,7 @@ public class SamClientServiceTest {
         // TODO this code below is not mocked correctly
         willThrow(new ApiException("test"))
             .given(samResourceApi)
-            .createResource(eq(SamClientService.ResourceType.DATASET.toString()), eq(createResourceRequest));
+            .createResource(eq(SamClientService.ResourceType.DATASNAPSHOT.toString()), eq(createResourceRequest));
 
         sam.createDatasetResource(new AuthenticatedUserRequest("blah", "blah"), datasetId, readersList);
     }
@@ -78,7 +78,7 @@ public class SamClientServiceTest {
         UUID studyId = UUID.randomUUID();
         willThrow(new ApiException("test"))
             .given(samResourceApi)
-            .deleteResource(eq(SamClientService.ResourceType.STUDY.toString()), eq(studyId.toString()));
+            .deleteResource(eq(SamClientService.ResourceType.DATASET.toString()), eq(studyId.toString()));
         sam.deleteStudyResource(new AuthenticatedUserRequest("blah", "blah"), studyId);
     }
 
@@ -87,7 +87,7 @@ public class SamClientServiceTest {
         UUID datasetId = UUID.randomUUID();
         willThrow(new ApiException("test"))
             .given(samResourceApi)
-            .deleteResource(eq(SamClientService.ResourceType.DATASET.toString()), eq(datasetId.toString()));
+            .deleteResource(eq(SamClientService.ResourceType.DATASNAPSHOT.toString()), eq(datasetId.toString()));
         sam.deleteDatasetResource(new AuthenticatedUserRequest("blah", "blah"), datasetId);
     }
 }
