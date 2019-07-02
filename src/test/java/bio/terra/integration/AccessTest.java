@@ -8,10 +8,7 @@ import bio.terra.integration.auth.Users;
 import bio.terra.integration.configuration.TestConfiguration;
 import bio.terra.model.*;
 import bio.terra.pdao.bigquery.BigQueryPdao;
-import bio.terra.pdao.bigquery.BigQueryProject;
-import bio.terra.resourcemanagement.metadata.google.GoogleProjectResource;
 import bio.terra.service.SamClientService;
-import com.google.j2objc.annotations.AutoreleasePool;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -120,8 +117,6 @@ public class AccessTest {
             SamClientService.ResourceType.DATASET,
             datasetSummaryModel.getId(),
             SamClientService.DataRepoAction.READ_DATA), equalTo(true));
-
-        bigQueryPdao.
 
     }
 }
