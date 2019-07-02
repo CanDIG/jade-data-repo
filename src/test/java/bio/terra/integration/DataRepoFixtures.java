@@ -1,5 +1,6 @@
 package bio.terra.integration;
 
+import bio.terra.fixtures.ConnectedOperations;
 import bio.terra.fixtures.JsonLoader;
 import bio.terra.fixtures.Names;
 import bio.terra.integration.configuration.TestConfiguration;
@@ -14,8 +15,6 @@ import bio.terra.model.StudyModel;
 import bio.terra.model.StudyRequestModel;
 import bio.terra.model.StudySummaryModel;
 import bio.terra.model.BillingProfileModel;
-import bio.terra.model.BillingProfileRequestModel;
-import bio.terra.fixtures.ProfileFixtures;
 import bio.terra.resourcemanagement.service.google.GoogleResourceConfiguration;
 import bio.terra.service.SamClientService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,6 +32,9 @@ import static org.junit.Assert.assertTrue;
 public class DataRepoFixtures {
 
     @Autowired
+    private ConnectedOperations connectedOperations;
+
+    @Autowired
     private JsonLoader jsonLoader;
 
     @Autowired
@@ -48,27 +50,15 @@ public class DataRepoFixtures {
     private GoogleResourceConfiguration googleResourceConfiguration;
 
     // Create a Billing Profile model: expect successful creation
-    public BillingProfileModel createBillingProfile(String authToken) throws Exception {
+    public BillingProfileModel getOrCreateBillingProfile(String authToken) throws Exception {
         String coreBillingAccountId = googleResourceConfiguration.getCoreBillingAccount();
-        BillingProfileRequestModel billingProfileRequestModel = ProfileFixtures.randomBillingProfileRequest()
-            .billingAccountId(coreBillingAccountId);
-        String json = objectMapper.writeValueAsString(billingProfileRequestModel);
-        DataRepoResponse<BillingProfileModel> postResponse = dataRepoClient.post(
-            authToken,
-            "/api/resources/v1/profiles",
-            json,
-            BillingProfileModel.class);
+        return connectedOperations.getOrCreateProfileForAccount(coreBillingAccountId);
 
-        assertThat("billing profile model is successfuly created", postResponse.getStatusCode(),
-            equalTo(HttpStatus.CREATED));
-        assertTrue("create billing profile model response is present",
-            postResponse.getResponseObject().isPresent());
-        return postResponse.getResponseObject().get();
     }
 
     public DataRepoResponse<StudySummaryModel> createStudyRaw(String authToken, String filename) throws Exception {
         StudyRequestModel requestModel = jsonLoader.loadObject(filename, StudyRequestModel.class);
-        BillingProfileModel billingProfileModel = this.createBillingProfile(authToken);
+        BillingProfileModel billingProfileModel = this.getOrCreateBillingProfile(authToken);
         requestModel.setDefaultProfileId(billingProfileModel.getId());
         requestModel.setName(Names.randomizeName(requestModel.getName()));
         String json = objectMapper.writeValueAsString(requestModel);
@@ -121,31 +111,50 @@ public class DataRepoFixtures {
         return response.getResponseObject().get();
     }
 
-    public DataRepoResponse<Object> addStudyPolicyMemberRaw(String authToken,
-                                                            String studyId,
+    public DataRepoResponse<Object> addPolicyMemberRaw(String authToken,
+                                                            String resourceId,
                                                             SamClientService.DataRepoRole role,
-                                                            String userEmail) throws Exception {
+                                                            String userEmail,
+                                                            SamClientService.ResourceType resourceType) throws Exception {
         PolicyMemberRequest req = new PolicyMemberRequest().email(userEmail);
         return dataRepoClient.post(authToken,
-            "/api/repository/v1/studies/" + studyId + "/policies/" + role.toString() + "/members",
+            "/api/repository/v1/"+resourceType.toPluralString()+"/" + resourceId + "/policies/" + role.toString() + "/members",
             objectMapper.writeValueAsString(req), null);
     }
 
-    public void addStudyPolicyMember(String authToken,
-                                     String studyId,
+    public void addPolicyMember(String authToken,
+                                     String resourceId,
                                      SamClientService.DataRepoRole role,
-                                     String userEmail) throws Exception {
-        DataRepoResponse<Object> response = addStudyPolicyMemberRaw(authToken, studyId, role, userEmail);
-        assertThat("study policy memeber is successfully added",
+                                     String userEmail,
+                                     SamClientService.ResourceType resourceType) throws Exception {
+        DataRepoResponse<Object> response = addPolicyMemberRaw(authToken, resourceId, role, userEmail, resourceType);
+        assertThat(resourceType + " policy member is successfully added",
             response.getStatusCode(), equalTo(HttpStatus.OK));
+    }
+
+
+    // adding study policy
+    public void addStudyPolicyMember(String authToken,
+                                String studyId,
+                                SamClientService.DataRepoRole role,
+                                String userEmail) throws Exception {
+        addPolicyMember(authToken, studyId, role, userEmail, SamClientService.ResourceType.STUDY);
     }
 
     // datasets
 
+    // adding dataset policy
+    public void addDatasetPolicyMember(String authToken,
+                                     String datasetId,
+                                     SamClientService.DataRepoRole role,
+                                     String userEmail) throws Exception {
+        addPolicyMember(authToken, datasetId, role, userEmail, SamClientService.ResourceType.DATASET);
+    }
+
     public DataRepoResponse<DatasetSummaryModel> createDatasetRaw(String authToken, StudySummaryModel studySummaryModel,
                                                                   String filename) throws Exception {
         DatasetRequestModel requestModel = jsonLoader.loadObject(filename, DatasetRequestModel.class);
-        BillingProfileModel billingProfileModel = this.createBillingProfile(authToken);
+        BillingProfileModel billingProfileModel = this.getOrCreateBillingProfile(authToken);
         requestModel.setName(Names.randomizeName(requestModel.getName()));
         requestModel.getContents().get(0).getSource().setStudyName(studySummaryModel.getName());
         requestModel.setProfileId(billingProfileModel.getId());
