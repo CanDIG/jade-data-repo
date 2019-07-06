@@ -6,24 +6,36 @@ import bio.terra.fixtures.JsonLoader;
 import bio.terra.integration.auth.AuthService;
 import bio.terra.integration.auth.Users;
 import bio.terra.integration.configuration.TestConfiguration;
+import bio.terra.metadata.Dataset;
 import bio.terra.model.*;
 import bio.terra.pdao.bigquery.BigQueryPdao;
+import bio.terra.pdao.bigquery.BigQueryProject;
 import bio.terra.service.SamClientService;
+import bio.terra.service.dataproject.OneDataProjectIdSelector;
+import com.google.auth.oauth2.AccessToken;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.bigquery.BigQueryOptions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.UUID;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -55,6 +67,9 @@ public class AccessTest {
     private SamClientService samClientService;
 
     @Autowired
+    private OneDataProjectIdSelector oneDataProjectIdSelector;
+
+    @MockBean
     private BigQueryPdao bigQueryPdao;
 
     private TestConfiguration.User steward;
@@ -118,5 +133,16 @@ public class AccessTest {
             datasetSummaryModel.getId(),
             SamClientService.DataRepoAction.READ_DATA), equalTo(true));
 
+        ArgumentCaptor<Dataset> projectArgument = ArgumentCaptor.forClass(Dataset.class);
+        when(bigQueryPdao.bigQueryProjectForDataset(any())).thenReturn(new BigQueryProject(oneDataProjectIdSelector.projectIdForDataset(null), GoogleCredentials.create(new AccessToken(readerToken, null))));
+
+        Dataset dataset = new Dataset().id(UUID.fromString(datasetSummaryModel.getId()))
+                                        .name(datasetSummaryModel.getName());
+        bigQueryPdao.datasetExists(dataset);
+
+        when(bigQueryPdao.bigQueryProjectForDataset(any())).thenReturn(new BigQueryProject(oneDataProjectIdSelector.projectIdForDataset(null), GoogleCredentials.create(new AccessToken(stewardToken, null))));
+        assertThat("other users cant access the database",bigQueryPdao.datasetExists(dataset), equalTo(false));
     }
+
+
 }
