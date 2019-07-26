@@ -23,6 +23,7 @@ public class FSObjectBase {
     private String path;
     private Long size;              // 0 for directory
     private String description;
+    private String projectId;
 
     public FSObjectBase() {
     }
@@ -33,6 +34,15 @@ public class FSObjectBase {
 
     public FSObjectBase objectId(UUID objectId) {
         this.objectId = objectId;
+        return this;
+    }
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public FSObjectBase projectId(String projectId) {
+        this.projectId = projectId;
         return this;
     }
 

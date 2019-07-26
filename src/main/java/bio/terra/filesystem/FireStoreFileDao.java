@@ -518,7 +518,8 @@ public class FireStoreFileDao {
             .createdDate(fsObject.getCreatedDate())
             .path(fsObject.getPath())
             .size(fsObject.getSize())
-            .description(fsObject.getDescription());
+            .description(fsObject.getDescription())
+            .projectId(fsObject.getProjectId());
     }
 
     // As mentioned at the top of the module, we can't use forward slash in a FireStore document
@@ -673,7 +674,8 @@ public class FireStoreFileDao {
             .fileCreatedDate(fileCreatedDate)
             .path(getDirectoryPath(fsObject.getPath()))
             .name(getObjectName(fsObject.getPath()))
-            .description(fsObject.getDescription());
+            .description(fsObject.getDescription())
+            .dataProject(fsObject.getProjectId());
 
         switch (fsObject.getObjectType()) {
             case FILE:
@@ -720,7 +722,8 @@ public class FireStoreFileDao {
                     .createdDate(createdDate)
                     .path(getFullPath(fireStoreObject))
                     .size(fireStoreObject.getSize())
-                    .description(fireStoreObject.getDescription());
+                    .description(fireStoreObject.getDescription())
+                    .projectId(fireStoreObject.getDataProject());
 
             case DIRECTORY:
                 return new FSDir()
@@ -730,7 +733,8 @@ public class FireStoreFileDao {
                     .createdDate(createdDate)
                     .path(getFullPath(fireStoreObject))
                     .size(fireStoreObject.getSize())
-                    .description(fireStoreObject.getDescription());
+                    .description(fireStoreObject.getDescription())
+                    .projectId(fireStoreObject.getDataProject());
 
             default:
                 throw new FileSystemCorruptException("Invalid object type found");

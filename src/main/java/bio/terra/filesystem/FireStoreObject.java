@@ -20,6 +20,8 @@ public class FireStoreObject {
     private String objectTypeLetter;
     private String path; // path to the object
     private String name; // name of the object
+    private String dataProject;
+
     // file-only fields
     private String fileCreatedDate;
     private String gspath;
@@ -31,6 +33,15 @@ public class FireStoreObject {
     private String flightId;
 
     public FireStoreObject() {
+    }
+
+    public String getDataProject() {
+        return dataProject;
+    }
+
+    public FireStoreObject dataProject(String dataProject) {
+        this.dataProject = dataProject;
+        return this;
     }
 
     public String getObjectId() {

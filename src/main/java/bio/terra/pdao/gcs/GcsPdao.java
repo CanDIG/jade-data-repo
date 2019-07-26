@@ -8,7 +8,7 @@ import bio.terra.pdao.exception.PdaoException;
 import bio.terra.pdao.exception.PdaoFileCopyException;
 import bio.terra.pdao.exception.PdaoInvalidUriException;
 import bio.terra.pdao.exception.PdaoSourceFileNotFoundException;
-import bio.terra.service.dataproject.OneDataProjectIdSelector;
+import bio.terra.service.dataproject.DataProjectService;
 import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Acl;
 import com.google.cloud.storage.Blob;
@@ -31,6 +31,7 @@ import java.util.List;
 public class GcsPdao {
     private GcsConfiguration gcsConfiguration;
     private GcsProjectFactory gcsProjectFactory;
+    private DataProjectService dataProjectService;
 
     @Autowired
     public GcsPdao(GcsConfiguration gcsConfiguration, GcsProjectFactory gcsProjectFactory) {
