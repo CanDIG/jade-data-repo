@@ -1,6 +1,7 @@
 package bio.terra.service.dataproject;
 
 import bio.terra.metadata.Dataset;
+import bio.terra.metadata.FSObjectBase;
 import bio.terra.metadata.Study;
 import bio.terra.resourcemanagement.service.google.GoogleResourceConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,11 @@ public class OneDataProjectIdSelector implements DataProjectIdSelector {
 
     @Override
     public String projectIdForDataset(Dataset dataset) {
+        return resourceConfiguration.getProjectId() + "-data";
+    }
+
+    @Override
+    public String projectIdForFile(FSObjectBase file) {
         return resourceConfiguration.getProjectId() + "-data";
     }
 }

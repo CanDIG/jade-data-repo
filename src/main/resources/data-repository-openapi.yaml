@@ -1580,6 +1580,7 @@ definitions:
     required:
       - source_path
       - target_path
+      - profileId
     properties:
       source_path:
         type: string
@@ -1598,6 +1599,10 @@ definitions:
         type: string
         description: |-
           A human readable description of the contents of the Data Object.
+      profileId:
+        type: string
+        description: |-
+          The profile to be billed for the file
 
   FSObjectModel:
     description: A file or directory in the data repository

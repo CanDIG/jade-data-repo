@@ -8,6 +8,7 @@ import bio.terra.pdao.exception.PdaoException;
 import bio.terra.pdao.exception.PdaoFileCopyException;
 import bio.terra.pdao.exception.PdaoInvalidUriException;
 import bio.terra.pdao.exception.PdaoSourceFileNotFoundException;
+import bio.terra.service.dataproject.OneDataProjectIdSelector;
 import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Acl;
 import com.google.cloud.storage.Blob;
@@ -29,12 +30,12 @@ import java.util.List;
 @Profile("google")
 public class GcsPdao {
     private GcsConfiguration gcsConfiguration;
-    private Storage storage;
+    private GcsProjectFactory gcsProjectFactory;
 
     @Autowired
-    public GcsPdao(GcsConfiguration gcsConfiguration, Storage storage) {
+    public GcsPdao(GcsConfiguration gcsConfiguration, GcsProjectFactory gcsProjectFactory) {
         this.gcsConfiguration = gcsConfiguration;
-        this.storage = storage;
+        this.gcsProjectFactory = gcsProjectFactory;
     }
 
     // We return the incoming FSObject with the blob information filled in

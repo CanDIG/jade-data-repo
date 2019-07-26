@@ -55,19 +55,5 @@ public class GcsConfiguration {
         this.readTimeoutSeconds = readTimeoutSeconds;
     }
 
-    @Bean
-    public Storage storage() {
-        // NOTE: it is also possible to set retry options here with RetrySettings.Builder to make
-        // settings and the .setRetryOptions() setter below. For now, just extend the timeouts
-        HttpTransportOptions transportOptions = StorageOptions.getDefaultHttpTransportOptions();
-        transportOptions = transportOptions.toBuilder()
-            .setConnectTimeout(connectTimeoutSeconds * 1000)
-            .setReadTimeout(readTimeoutSeconds * 1000)
-            .build();
-        StorageOptions storageOptions = StorageOptions.newBuilder()
-            .setTransportOptions(transportOptions)
-            .build();
-        return storageOptions.getService();
-    }
 
 }
