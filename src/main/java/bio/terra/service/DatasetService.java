@@ -48,7 +48,7 @@ public class DatasetService {
         this.dataLocationService = dataLocationService;
     }
 
-    public DatasetSummaryModel createDataset(DatasetRequestModel datasetRequest, AuthenticatedUserRequest userReq) {
+    public DatasetSummaryModel createDatasetJob(DatasetRequestModel datasetRequest, AuthenticatedUserRequest userReq) {
         return jobService.submitAndWait(
             "Create dataset " + datasetRequest.getName(),
             DatasetCreateFlight.class,
@@ -56,6 +56,10 @@ public class DatasetService {
             Collections.EMPTY_MAP,
             userReq,
             DatasetSummaryModel.class);
+    }
+
+    public UUID createDatasetMetadata(Dataset incompleteDataset) {
+        return datasetDao.create(incompleteDataset);
     }
 
     public Dataset retrieve(UUID id) {
@@ -111,5 +115,9 @@ public class DatasetService {
             ingestRequestModel,
             Collections.singletonMap(JobMapKeys.DATASET_ID.getKeyName(), id),
             userReq);
+    }
+
+    public boolean deleteByName(String datasetName) {
+        return datasetDao.deleteByName(datasetName);
     }
 }

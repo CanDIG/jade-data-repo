@@ -67,7 +67,7 @@ public class DatasetTest {
 
     @Test
     public void testMinimalCreate() throws Exception {
-        when(datasetService.createDataset(any(), any()))
+        when(datasetService.createDatasetJob(any(), any()))
             .thenReturn(DatasetFixtures.buildMinimalDatasetSummary());
 
         mvc.perform(post("/api/repository/v1/datasets")
@@ -82,7 +82,7 @@ public class DatasetTest {
 
     @Test
     public void testMinimalJsonCreate() throws Exception {
-        when(datasetService.createDataset(any(), any()))
+        when(datasetService.createDatasetJob(any(), any()))
             .thenReturn(DatasetFixtures.buildMinimalDatasetSummary());
 
         String datasetJSON = jsonLoader.loadJson("dataset-minimal.json");
@@ -98,7 +98,7 @@ public class DatasetTest {
 
     @Test
     public void testFlightError() throws Exception {
-        when(datasetService.createDataset(any(), any())).thenThrow(ApiException.class);
+        when(datasetService.createDatasetJob(any(), any())).thenThrow(ApiException.class);
         mvc.perform(post("/api/repository/v1/datasets")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(DatasetFixtures.buildDatasetRequest())))

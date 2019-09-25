@@ -136,7 +136,7 @@ public class RepositoryApiController implements RepositoryApi {
             SamClientService.ResourceType.DATAREPO,
             appConfig.getResourceId(),
             SamClientService.DataRepoAction.CREATE_DATASET);
-        return new ResponseEntity<>(datasetService.createDataset(datasetRequest, getAuthenticatedInfo()),
+        return new ResponseEntity<>(datasetService.createDatasetJob(datasetRequest, getAuthenticatedInfo()),
             HttpStatus.CREATED);
     }
 
