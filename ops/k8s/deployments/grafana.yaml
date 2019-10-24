@@ -12,9 +12,13 @@ spec:
       serviceAccountName: jade-sa
       containers:
       - name: grafana
-        image: grafana/grafana
+        image: grafana/grafana:latest
         ports:
         - containerPort: 3000
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "wget -O- --post-data=\'{\"enabled\":true,\"pinned\":true,\"jsonData\":{\"apiKeySet\":true},\"secureJsonData\":{\"apiKey\":\"eyJrIjoiZDEwYWI3MDkxYzk4MjA5ZGZhYzBhYWZiNWQxMjY1OWFiMTUwNGUxZiIsIm4iOiJ0ZXN0IiwiaWQiOjMwMjkwNH0=\"}}\' --header=\'Content-Type:application/json\' \'http://admin:be2c38e286fff7df25d17e21294604a8@grafana-service.data-repo:3000/api/plugins/raintank-worldping-app/settings\'"]
         readinessProbe:
           httpGet:
             path: /api/health
@@ -68,7 +72,7 @@ spec:
               name: google-clientid-secret
               key: adminpassword
         - name: GF_INSTALL_PLUGINS
-          value: "grafana-kubernetes-app,grafana-worldmap-panel,doitintl-bigquery-datasource"
+          value: "grafana-kubernetes-app,grafana-worldmap-panel,doitintl-bigquery-datasource,raintank-worldping-app"
         - name: GF_AUTH_GOOGLE_ENABLED
           value: "true"
         - name: GF_AUTH_GOOGLE_ALLOW_SIGN_UP

@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: enable-worldping
+spec:
+  template:
+    spec:
+      ttlSecondsAfterFinished: 100
+      serviceAccountName: jade-sa
+      containers:
+      - name: wget
+        image: busybox:latest
+        command: ["/bin/sh", "-c", "wget -O- --post-data=\'{\"enabled\":true,\"pinned\":true,\"jsonData\":{\"apiKeySet\":true},\"secureJsonData\":{\"apiKey\":\"eyJrIjoiZDEwYWI3MDkxYzk4MjA5ZGZhYzBhYWZiNWQxMjY1OWFiMTUwNGUxZiIsIm4iOiJ0ZXN0IiwiaWQiOjMwMjkwNH0=\"}}\' --header=\'Content-Type:application/json\' \'http://admin:be2c38e286fff7df25d17e21294604a8@grafana-service.data-repo:3000/api/plugins/raintank-worldping-app/settings\'"]
+      restartPolicy: Never
+  backoffLimit: 4
