@@ -96,10 +96,13 @@ kubectl --namespace="${KUBE_NAMESPACE}" apply -f "${SCRATCH}/ops/k8s/services"
 # create Deployments
 kubectl --namespace="${KUBE_NAMESPACE}" apply -f "${SCRATCH}/ops/k8s/deployments"
 
+# cronjobs/jobs
+kubectl --namespace="${KUBE_NAMESPACE}" apply -f "${SCRATCH}/ops/k8s/jobs/all"
+
 # sql cronjobs for prod
 if [ ${ENVIRONMENT} == "prod" ]
 then
-kubectl --namespace="${KUBE_NAMESPACE}" apply -f "${SCRATCH}/ops/k8s/jobs"
+kubectl --namespace="${KUBE_NAMESPACE}" apply -f "${SCRATCH}/ops/k8s/jobs/prod"
 fi
 
 # build a docker container and push it to gcr

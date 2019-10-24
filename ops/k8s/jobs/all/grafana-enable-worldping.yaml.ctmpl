@@ -1,0 +1,39 @@
+{{ with $environment := env "ENVIRONMENT" }}
+{{ with $suffix := env "SUFFIX" }}
+{{ with $project := env "GOOGLE_CLOUD_PROJECT" }}
+{{ with secret (printf "secret/dsde/datarepo/%s/clientid-secret.json" $environment ) }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: enable-worldping
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      serviceAccountName: jade-sa
+      containers:
+      - name: wget
+        image: busybox:latest
+        command: ["/bin/sh", "-c", "sleep 50 && wget -O- --post-data=\'{\"enabled\":true,\"pinned\":true,\"jsonData\":{\"apiKeySet\":true},\"secureJsonData\":{\"apiKey\":\"{{ .Data.grafanaApiToken }}\"}}\' --header=\'Content-Type:application/json\' \'http://admin:{{ .Data.adminPassword }}@grafana-service.data-repo:3000/api/plugins/raintank-worldping-app/settings\'"]
+      restartPolicy: Never
+  backoffLimit: 4
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: enable-endpoint-worldping
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      serviceAccountName: jade-sa
+      containers:
+      - name: curl
+        image: appropriate/curl:latest
+        command: ["/bin/sh", "-c", "sleep 70 && curl \'http://admin:{{ .Data.adminPassword }}@grafana-service.data-repo:3000/api/plugin-proxy/raintank-worldping-app/api/v2/endpoints\' -H \'Accept: application/json, text/plain, */*\' -H \'Accept-Language: en-US,en;q=0.5\' -H \'Content-Type: application/json;charset=utf-8\' --data \'{\"id\":0,\"orgId\":0,\"name\":\"{{ (printf "jade-%s.datarepo-%s.broadinstitute.org" $suffix $environment) }}\",\"slug\":\"\",\"checks\":[{\"id\":0,\"orgId\":0,\"endpointId\":0,\"route\":{\"type\":\"byIds\",\"config\":{\"ids\":[5,104,89,656,98,2,3,10]}},\"type\":\"https\",\"frequency\":120,\"offset\":0,\"enabled\":true,\"state\":0,\"stateChange\":\"0001-01-01T00:00:00Z\",\"stateCheck\":\"0001-01-01T00:00:00Z\",\"settings\":{\"headers\":\"User-Agent: worldping-api\\nAccept-Encoding: gzip\\n\",\"host\":\"{{ (printf "jade-%s.datarepo-%s.broadinstitute.org" $suffix $environment) }}\",\"method\":\"GET\",\"path\":\"/login\",\"port\":443,\"timeout\":5,\"validateCert\":true},\"healthSettings\":{\"num_collectors\":3,\"steps\":3,\"notifications\":{\"enabled\":false,\"addresses\":\"\"}},\"created\":\"0001-01-01T00:00:00Z\",\"updated\":\"0001-01-01T00:00:00Z\"},{\"id\":0,\"orgId\":0,\"endpointId\":0,\"route\":{\"type\":\"byIds\",\"config\":{\"ids\":[5,104,89,656,98,2,3,10]}},\"type\":\"dns\",\"frequency\":120,\"offset\":0,\"enabled\":true,\"state\":0,\"stateChange\":\"0001-01-01T00:00:00Z\",\"stateCheck\":\"0001-01-01T00:00:00Z\",\"settings\":{\"name\":\"{{ (printf "jade-%s.datarepo-%s.broadinstitute.org" $suffix $environment) }}\",\"port\":53,\"protocol\":\"udp\",\"server\":\"ns-cloud-e1.googledomains.com,ns-cloud-e2.googledomains.com,ns-cloud-e3.googledomains.com,ns-cloud-e4.googledomains.com\",\"timeout\":5,\"type\":\"A\"},\"healthSettings\":{\"num_collectors\":3,\"steps\":3,\"notifications\":{\"enabled\":false,\"addresses\":\"\"}},\"created\":\"0001-01-01T00:00:00Z\",\"updated\":\"0001-01-01T00:00:00Z\"},{\"id\":0,\"orgId\":0,\"endpointId\":0,\"route\":{\"type\":\"byIds\",\"config\":{\"ids\":[5,104,89,656,98,2,3,10]}},\"type\":\"ping\",\"frequency\":60,\"offset\":0,\"enabled\":true,\"state\":0,\"stateChange\":\"0001-01-01T00:00:00Z\",\"stateCheck\":\"0001-01-01T00:00:00Z\",\"settings\":{\"hostname\":\"{{ (printf "jade-%s.datarepo-%s.broadinstitute.org" $suffix $environment) }}\",\"timeout\":5},\"healthSettings\":{\"num_collectors\":3,\"steps\":3,\"notifications\":{\"enabled\":false,\"addresses\":\"\"}},\"created\":\"0001-01-01T00:00:00Z\",\"updated\":\"0001-01-01T00:00:00Z\"}],\"tags\":[],\"created\":\"0001-01-01T00:00:00Z\",\"updated\":\"0001-01-01T00:00:00Z\"}\'"]
+      restartPolicy: Never
+  backoffLimit: 4
+{{end}}
+{{end}}
+{{end}}
+{{end}}
