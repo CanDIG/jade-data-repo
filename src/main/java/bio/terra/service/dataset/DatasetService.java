@@ -1,5 +1,7 @@
 package bio.terra.service.dataset;
 
+import bio.terra.model.AssetModel;
+import bio.terra.service.dataset.flight.create.AddAssetSpecFlight;
 import bio.terra.service.iam.AuthenticatedUserRequest;
 import bio.terra.service.dataset.flight.create.DatasetCreateFlight;
 import bio.terra.service.dataset.flight.delete.DatasetDeleteFlight;
@@ -106,6 +108,18 @@ public class DatasetService {
         return jobService
             .newJob(description, DatasetIngestFlight.class, ingestRequestModel, userReq)
             .addParameter(JobMapKeys.DATASET_ID.getKeyName(), id)
+            .submit();
+    }
+
+    public String addDatasetAssetSpecifications(
+        String datasetId,
+        AssetModel assetModel,
+        AuthenticatedUserRequest userReq
+    ) {
+       String description = "Add dataset asset spec " + assetModel.getName();
+        return jobService
+            .newJob(description, AddAssetSpecFlight.class, assetModel, userReq)
+            .addParameter(JobMapKeys.DATASET_ID.getKeyName(), datasetId)
             .submit();
     }
 }
