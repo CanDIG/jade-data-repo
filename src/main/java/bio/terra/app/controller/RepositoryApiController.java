@@ -25,6 +25,7 @@ import bio.terra.model.SnapshotModel;
 import bio.terra.model.SnapshotRequestModel;
 import bio.terra.model.UserStatusInfo;
 import bio.terra.service.configuration.ConfigurationService;
+import bio.terra.service.dataset.AssetModelValidator;
 import bio.terra.service.dataset.DatasetRequestValidator;
 import bio.terra.service.dataset.DatasetService;
 import bio.terra.service.dataset.IngestRequestValidator;
@@ -80,6 +81,7 @@ public class RepositoryApiController implements RepositoryApi {
     private final PolicyMemberValidator policyMemberValidator;
     private final AuthenticatedUserRequestFactory authenticatedUserRequestFactory;
     private final ConfigurationService configurationService;
+    private final AssetModelValidator assetModelValidator;
 
     // needed for local testing w/o proxy
     private final ApplicationConfiguration appConfig;
@@ -99,7 +101,8 @@ public class RepositoryApiController implements RepositoryApi {
             FileService fileService,
             PolicyMemberValidator policyMemberValidator,
             AuthenticatedUserRequestFactory authenticatedUserRequestFactory,
-            ConfigurationService configurationService
+            ConfigurationService configurationService,
+            AssetModelValidator assetModelValidator
     ) {
         this.objectMapper = objectMapper;
         this.request = request;
@@ -115,6 +118,7 @@ public class RepositoryApiController implements RepositoryApi {
         this.policyMemberValidator = policyMemberValidator;
         this.authenticatedUserRequestFactory = authenticatedUserRequestFactory;
         this.configurationService = configurationService;
+        this.assetModelValidator = assetModelValidator;
     }
 
     @InitBinder
@@ -123,6 +127,7 @@ public class RepositoryApiController implements RepositoryApi {
         binder.addValidators(snapshotRequestValidator);
         binder.addValidators(ingestRequestValidator);
         binder.addValidators(policyMemberValidator);
+        binder.addValidators(assetModelValidator);
     }
 
     @Override
@@ -206,9 +211,6 @@ public class RepositoryApiController implements RepositoryApi {
             IamResourceType.DATASET,
             id,
             IamAction.EDIT_DATASET);
-        if (!ValidationUtils.isValidAsset(asset)) {
-            throw new ValidationException("InvalidAssetModel");
-        }
         String jobId = datasetService.addDatasetAssetSpecifications(id, asset, userReq);
         return jobToResponse(jobService.retrieveJob(jobId, userReq));
     }
