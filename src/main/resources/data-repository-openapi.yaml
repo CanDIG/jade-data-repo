@@ -1430,6 +1430,12 @@ parameters:
     type: integer
     default: 0
     in: query
+  AssetId:
+    name: assetid
+    description: An asset id
+    required: true
+    type: string
+    in: path
 
 ##########################################################################################
 # DEFINITIONS
